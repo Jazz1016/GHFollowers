@@ -9,7 +9,7 @@ import UIKit
 
 class NetworkManager {
     static let shared   = NetworkManager()
-    private let baseUrl         = "https://api.github.com/users/"
+    private let baseUrl = "https://api.github.com/users/"
     let cache           = NSCache<NSString, UIImage>()
     
     private init() {
@@ -42,15 +42,13 @@ class NetworkManager {
             
             do {
                 let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                let followers = try decoder.decode([Follower].self, from: data)
+                decoder.keyDecodingStrategy     = .convertFromSnakeCase
+                let followers                   = try decoder.decode([Follower].self, from: data)
                 completed(.success(followers))
             } catch {
-                print(error.localizedDescription)
+//                print(error.localizedDescription)
                 completed(.failure(.invalidData))
             }
-
-
         }
         task.resume()
     }
@@ -81,7 +79,8 @@ class NetworkManager {
             
             do {
                 let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                decoder.keyDecodingStrategy  = .convertFromSnakeCase
+                decoder.dateDecodingStrategy = .iso8601
                 let user = try decoder.decode(User.self, from: data)
                 completed(.success(user))
             } catch {
@@ -90,6 +89,31 @@ class NetworkManager {
             }
 
 
+        }
+        task.resume()
+    }
+    
+    func downloadImageFromnUrl(from urlString: String, completed: @escaping (UIImage?) -> Void) {
+        
+        let cacheKey = NSString(string: urlString)
+        if let image = cache.object(forKey: cacheKey) {
+            completed(image)
+            return
+        }
+        guard let url = URL(string: urlString) else {
+            completed(nil)
+            return
+        }
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            guard let self = self, error == nil,
+                  let response = response as? HTTPURLResponse, response.statusCode == 200,
+                  let data = data,
+                  let image = UIImage(data: data) else {
+                      completed(nil)
+                      return
+                  }
+            self.cache.setObject(image, forKey: cacheKey)
+                completed(image)
         }
         task.resume()
     }

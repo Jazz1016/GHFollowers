@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol FollowersListVCDelegate: class {
+protocol FollowersListVCDelegate: AnyObject {
     func didRequestFollowers(for username: String)
 }
 
@@ -24,7 +24,17 @@ class FollowerListVC: UIViewController {
     
     var collectionView: UICollectionView!
     var dataSource: UICollectionViewDiffableDataSource<Section, Follower>!
-
+    
+    init(username: String) {
+        super.init(nibName: nil, bundle: nil)
+        self.username   = username
+        title           = username
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViewController()
@@ -34,12 +44,10 @@ class FollowerListVC: UIViewController {
         configureDataSource()
     }
     
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
     }
-    
     
     func configureViewController() {
         view.backgroundColor = .systemBackground
@@ -57,7 +65,7 @@ class FollowerListVC: UIViewController {
         collectionView.register(FollowerCell.self, forCellWithReuseIdentifier: FollowerCell.reuseID)
     }
     
-    func configureSearchController(){
+    func configureSearchController() {
         let searchController                                    = UISearchController()
         searchController.searchResultsUpdater                   = self
         searchController.searchBar.delegate                     = self
@@ -73,7 +81,6 @@ class FollowerListVC: UIViewController {
             guard let self = self else { return }
             self.dismissLoadingView()
             
-            
             switch result {
             case .success(let followers):
                 guard let followers = followers else { return }
@@ -88,11 +95,10 @@ class FollowerListVC: UIViewController {
                 }
                 self.updateData(on: self.followers)
             case .failure(let error):
-                self.presentGFAlertOnMainThread(title: "Bad Stuff Happend", message: error.rawValue, buttonTitle: "Ok")
+                self.presentGFAlertOnMainThread(title: "Bad Stuff Happened", message: error.rawValue, buttonTitle: "Ok")
             }
         }
     }
-    
     
     func configureDataSource() {
         dataSource = UICollectionViewDiffableDataSource<Section, Follower>(collectionView: collectionView, cellProvider: { (collectionView, indexPath, follower) -> UICollectionViewCell? in
@@ -101,7 +107,6 @@ class FollowerListVC: UIViewController {
             return cell
         })
     }
-    
     
     func updateData(on followers: [Follower]) {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Follower>()
@@ -127,7 +132,6 @@ class FollowerListVC: UIViewController {
                         self.presentGFAlertOnMainThread(title: "Success!", message: "You have successfully favorited this user", buttonTitle: "Hooray")
                         return
                     }
-                    
                     self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, buttonTitle: "Ok")
                 }
                 
@@ -161,7 +165,6 @@ extension FollowerListVC: UICollectionViewDelegate {
         let destVC          = UserInfoVC()
         destVC.username     = follower.login
         destVC.delegate     = self
-//        destVC.follower = follower
         let navController   = UINavigationController(rootViewController: destVC)
         present(navController, animated: true)
     }
