@@ -3,11 +3,11 @@
 //  GHFollowers
 //
 //  Created by James Lea on 3/22/22.
-//
+//15
 
 import UIKit
 
-struct UIHelper {
+enum UIHelper {
     static func createThreeColumnFlowLayout(in view: UIView) -> UICollectionViewFlowLayout {
         let width                       = view.bounds.width
         let padding: CGFloat            = 12
