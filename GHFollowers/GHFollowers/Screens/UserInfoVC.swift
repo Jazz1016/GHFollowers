@@ -7,9 +7,8 @@
 
 import UIKit
 
-protocol UserInfoVCDelegate: class {
-    func didTapGithubProfile(for user: User)
-    func didTapGithubFollower(for user: User)
+protocol UserInfoVCDelegate: AnyObject {
+    func didRequestFollowers(for username: String)
 }
 
 class UserInfoVC: UIViewController {
@@ -22,7 +21,7 @@ class UserInfoVC: UIViewController {
     
     var username: String!
     var user: User?
-    weak var delegate: FollowersListVCDelegate!
+    weak var delegate: UserInfoVCDelegate!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -106,7 +105,7 @@ class UserInfoVC: UIViewController {
     
 }//End of Class
 
-extension UserInfoVC: UserInfoVCDelegate {
+extension UserInfoVC: ItemInfoVCDelegate {
     func didTapGithubProfile(for user: User) {
         guard let url = URL(string: user.htmlUrl) else {
             presentGFAlertOnMainThread(title: "Invalid URL", message: "URL attached to this user is invalid", buttonTitle: "Ok")

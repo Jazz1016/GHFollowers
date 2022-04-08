@@ -67,8 +67,6 @@ enum PersistenceManager {
         } catch {
             return .unableToFavorite
         }
-        
-        return nil
     }
     
 }//End of Enum
