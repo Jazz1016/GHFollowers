@@ -15,7 +15,7 @@ protocol ItemInfoVCDelegate: AnyObject {
 
 class GFItemInfoVC: UIViewController {
     
-//    let stackView = UIStackView()
+    let stackView = UIStackView()
     let itemInfoViewOne = GFItemInfoView()
     let itemInfoViewTwo = GFItemInfoView()
     let actionButton = GFButton()
